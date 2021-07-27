@@ -11,7 +11,7 @@ def get_mac(ip):
     if answered_list:
         return answered_list[0][1].hwsrc
     else:
-        print("sin valor en lectura cambios 1111 ")
+        print("sin valor en lectura cambios 11115555 ")
     
 
 def spoof(target_ip, spoof_ip):
